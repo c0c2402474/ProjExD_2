@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -26,9 +27,24 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
         yoko = False
     if rct.top < 0 or HEIGHT < rct.bottom:
         tate = False
-    return yoko, tate
-    
+    return yoko, tate  
 
+
+def gameover(screen: pg.Surface) -> None:
+    kk_cry_img = pg.image.load("fig/8.png")  #泣いてるこうかとん
+    brack_img = pg.Surface((WIDTH, HEIGHT))
+    brack_img.set_alpha(50)
+    fonto = pg.font.Font(None, 80)  # 文字
+    txt = fonto.render("Game Over",
+                       True, (255, 255, 255))
+    
+    screen.blit(brack_img, [0,0])
+    screen.blit(kk_cry_img, [750, 300])
+    screen.blit(kk_cry_img, [350, 300])
+    screen.blit(txt, [420, 300])
+    pg.display.update()
+    time.sleep(5)
+    
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -49,6 +65,10 @@ def main():
     bb_img.set_colorkey((0, 0, 0))
     vx, vy = +5, +5
 
+    # ゲームオーバー画面初期化
+    
+    
+
     clock = pg.time.Clock()
     while True:
         for event in pg.event.get():
@@ -56,11 +76,11 @@ def main():
                 return
         screen.blit(bg_img, [0, 0]) 
 
-        if kk_rct.colliderect(bb_rct):  
-            print("Game Over")
+        if kk_rct.colliderect(bb_rct):
+            # print("Game Over")
             # こうかとんレクとと爆弾レクとが重なっていたら
+            gameover(screen)
             return
-
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for key , mv in DELTA.items():
