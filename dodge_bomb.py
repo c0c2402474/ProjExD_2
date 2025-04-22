@@ -30,20 +30,37 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate  
 
 
-def gameover(screen: pg.Surface) -> None:
+def gameover(screen: pg.Surface) -> None: 
+    """
+    引数：こうかとんと爆弾重なり情報
+    戻り値：画像出力
+    画面内にブラックアウトとこうかとんとGAMEOVERを表示
+    """
+    # ゲームオーバー画面初期化
     kk_cry_img = pg.image.load("fig/8.png")  #泣いてるこうかとん
     brack_img = pg.Surface((WIDTH, HEIGHT))
     brack_img.set_alpha(50)
     fonto = pg.font.Font(None, 80)  # 文字
     txt = fonto.render("Game Over",
                        True, (255, 255, 255))
-    
+    # 画面に画像表示
     screen.blit(brack_img, [0,0])
     screen.blit(kk_cry_img, [750, 300])
     screen.blit(kk_cry_img, [350, 300])
     screen.blit(txt, [420, 300])
     pg.display.update()
     time.sleep(5)
+
+
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    bb_accs = [a for a in range(1, 11)]
+    bb_imgs =[]
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_imgs.append(bb_img)
+    return bb_accs, bb_imgs
+
     
 
 def main():
@@ -65,10 +82,7 @@ def main():
     bb_img.set_colorkey((0, 0, 0))
     vx, vy = +5, +5
 
-    # ゲームオーバー画面初期化
-    
-    
-
+   
     clock = pg.time.Clock()
     while True:
         for event in pg.event.get():
@@ -81,20 +95,14 @@ def main():
             # こうかとんレクとと爆弾レクとが重なっていたら
             gameover(screen)
             return
+        
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for key , mv in DELTA.items():
             if key_lst[key]:
                 sum_mv[0] += mv[0]  # 左右方向
                 sum_mv[1] += mv[1]  # 上下方向
-        # if key_lst[pg.K_UP]:
-        #     sum_mv[1] -= 5
-        # if key_lst[pg.K_DOWN]:
-        #     sum_mv[1] += 5
-        # if key_lst[pg.K_LEFT]:
-        #     sum_mv[0] -= 5
-        # if key_lst[pg.K_RIGHT]:
-        #     sum_mv[0] += 5
+
         kk_rct.move_ip(sum_mv)  # こうかとん移動
         if check_bound(kk_rct) != (True, True):  # 画面の外だったら
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])  # 画面内に戻す
@@ -106,6 +114,10 @@ def main():
         if not tate:
             vy *= -1
         screen.blit(bb_img, bb_rct)  # 爆弾描画
+
+        bb_imgs, bb_accs = init_bb_imgs()
+        avx = vx*bb_accs[min(tmr//500,9)]
+        bb_img = bb_imgs[min(tmr//500,9)]
         pg.display.update()
         tmr += 1
         clock.tick(50)
