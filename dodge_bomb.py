@@ -53,6 +53,9 @@ def gameover(screen: pg.Surface) -> None:
 
 
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    サイズの違う爆弾と加速度のリストを返す関数
+    """
     bb_accs = [a for a in range(1, 11)]
     bb_imgs =[]
     for r in range(1, 11):
@@ -62,7 +65,6 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     return bb_accs, bb_imgs
 
     
-
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -115,9 +117,9 @@ def main():
             vy *= -1
         screen.blit(bb_img, bb_rct)  # 爆弾描画
 
-        bb_imgs, bb_accs = init_bb_imgs()
-        avx = vx*bb_accs[min(tmr//500,9)]
-        bb_img = bb_imgs[min(tmr//500,9)]
+        # bb_imgs, bb_accs = init_bb_imgs() 演習2
+        # avx = vx*bb_accs[min(tmr//500,9)]
+        # bb_img = bb_imgs[min(tmr//500,9)]
         pg.display.update()
         tmr += 1
         clock.tick(50)
